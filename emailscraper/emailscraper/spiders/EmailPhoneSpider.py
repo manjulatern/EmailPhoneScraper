@@ -10,11 +10,11 @@ from extract_emails import ExtractEmails
 class EmailPhoneSpider(scrapy.Spider):
 	name = 'emailPhoneSpider'	
 
-	def __init__(self, csv_file='', pages = 'single', *args, **kwargs):
-		if pages == "all":
+	def __init__(self, csv_file='', depth = 0, *args, **kwargs):
+		if depth == 'all':
 			self.depth = None
 		else:
-			self.depth = 0
+			self.depth = int(depth)
 		self.start_urls = []
 		if not csv_file:
 			logging.error("EmailPhoneSpider;Please upload a CSV File")

@@ -17,9 +17,9 @@ python scrap.py <csv-file> <pages>
 ```
 #### Parameters:
 	1. csv-file : The csv files with all the urls to look for
-	2. pages: How many depths you want to go into.
+	2. pages: How many depths you want to go into. 0 for single page. Put other integer for more links.
 
-#### Example 1: python scrap.py lawyers.csv single
+#### Example 1: python scrapy.py lawyers.csv 0
 	* This will run the scraper for all the urls from the file and looks for the content in only the url specified.
 #### Example 2: python scrapy.py lawyers.csv all
 	* This will run the scraper for all of the urls and goes into every depth of the page.

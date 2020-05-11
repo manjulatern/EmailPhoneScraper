@@ -6,23 +6,31 @@ import requests
 class PhoneEmailScraperLite():
 
 	def scrape(self,urls,depth):
-		with open('output.csv', 'w', newline='') as file:
-			writer = csv.writer(file)
-			writer.writerow(["URL", "Phone", "Email","Status"])
-			for url in urls:
-				phone_numbers = ""
-				emails = ""
-				try:
-					html_text = requests.get(url).text
-					phone_numbers = self.extract_phone(html_text,url)
-					emails = self.extract_emails(url,depth)
-					status = "Completed"
-				except Exception as e:
-					logging.error("EmailPhoneSpider;Error on Extraction for URL=%s; Error: %s ",url,traceback.format_exc())	
-					logging.error("Not a valid URL")
-					status = "Cannot Process URL"
-				finally:
-					writer.writerow([url, phone_numbers, emails,status])
+		if depth == "all":
+			depth = None
+		logging.warning("EmailPhoneSpider; Extraction Process Started")
+		
+		file = open('output.csv', 'w')
+		writer = csv.writer(file)
+		writer.writerow(["URL", "Phone", "Email"])
+		file.close()
+		for url in urls:
+			logging.warning("EmailPhoneSpider; Extraction started for URL: %s",url)
+			phone_numbers = ""
+			emails = ""
+			try:
+				html_text = requests.get(url).text
+				phone_numbers = self.extract_phone(html_text,url)
+				emails = self.extract_emails(url,depth)
+				file = open('output.csv', 'a')
+				writer = csv.writer(file)
+				writer.writerow([url, phone_numbers, emails])
+				logging.warning("EmailPhoneSpider; Adding data in CSV for URL: %s",url)
+			except Exception as e:
+				logging.error("EmailPhoneSpider;Error on Extraction for URL=%s; Error: %s ",url,traceback.format_exc())	
+				logging.error("Not a valid URL")
+			finally:
+				file.close()
 
 	def extract_phone(self,html_text,url):
 		number = ""
@@ -37,7 +45,7 @@ class PhoneEmailScraperLite():
 		except Exception as e:
 			logging.debug("EmailPhoneSpider;Error on Phone Number Extraction for URL=%s; Error: %s ",url,traceback.format_exc())	
 
-		logging.info("EmailPhoneSpider;Phone Number Extraction completed for URL: %s",url)
+		logging.warning("EmailPhoneSpider;Phone Number Extraction completed for URL: %s",url)
 		return number.strip(",")
 
 	def extract_emails(self,url,depth):
@@ -51,7 +59,7 @@ class PhoneEmailScraperLite():
 		except Exception as e:
 			logging.debug("EmailPhoneSpider;Error on Phone Number Extraction for URL=%s; Error: %s ",url,traceback.format_exc())	
 		
-		logging.info("EmailPhoneSpider;Email Extraction completed for URL: %s",url)
+		logging.warning("EmailPhoneSpider;Email Extraction completed for URL: %s",url)
 		return all_emails.strip(",")
 
 	def load_csv(self,name):
@@ -69,8 +77,4 @@ if len(sys.argv) < 3:
 else:
 	urls = scraper.load_csv(sys.argv[1])
 	depth = sys.argv[2]
-	if depth == "all":
-		depth = None
-	else:
-		depth = 0
 	scraper.scrape(urls,depth)

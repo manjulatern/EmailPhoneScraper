@@ -6,7 +6,7 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-
+import csv
 
 class EmailscraperSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -33,6 +33,16 @@ class EmailscraperSpiderMiddleware(object):
 
         # Must return an iterable of Request, dict or Item objects.
         for i in result:
+            output_file = open('output.csv', 'a')
+            writer = csv.writer(output_file)
+            writer.writerow([i["url"], i["email"], i["phone"]])
+            output_file.close()
+            if i["email"]:
+                email_file = open('emails.csv', 'a')
+                writer = csv.writer(email_file)
+                for email in i["email"].split(","):
+                    writer.writerow([email])
+                email_file.close()
             yield i
 
     def process_spider_exception(self, response, exception, spider):
